@@ -23,7 +23,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // Inyectamos lo que necesitamos para la autenticación y creación del token
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -39,19 +38,15 @@ public class AuthController {
         return "Usuario creado con éxito";
     }
 
-    // CAMBIO: El login ahora devuelve un token JWT
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        // Autenticamos al usuario con el AuthenticationManager
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
 
-        // Si la autenticación es exitosa, generamos el token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         final String jwt = jwtService.generateToken(userDetails);
 
-        // Devolvemos el token en la respuesta
         return ResponseEntity.ok(Map.of("token", jwt));
     }
 }
